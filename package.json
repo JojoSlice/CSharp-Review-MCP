@@ -1,0 +1,33 @@
+{
+  "name": "csharp-review-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for C# code review with official Microsoft documentation",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "start": "node build/index.js",
+    "prepopulate": "node build/prepopulateCache.js",
+    "watch": "tsc --watch",
+    "setup": "./setup.sh",
+    "build-roslyn": "cd roslyn-analyzer && dotnet build"
+  },
+  "keywords": [
+    "mcp",
+    "csharp",
+    "code-review",
+    "dotnet"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.1",
+    "turndown": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "@types/turndown": "^5.0.5",
+    "typescript": "^5.9.3"
+  }
+}
