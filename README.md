@@ -1,26 +1,26 @@
 # C# Review MCP Server
 
-En Model Context Protocol (MCP) server som ger LLM:er tillgång till officiell C# och .NET-dokumentation OCH Roslyn-baserad kodanalys för att utföra professionella code reviews.
+A Model Context Protocol (MCP) server that provides LLMs access to official C# and .NET documentation AND Roslyn-based code analysis for performing professional code reviews.
 
-## Översikt
+## Overview
 
-Denna MCP-server exponerar:
-- **MCP Resources**: Microsoft's officiella C# och .NET-dokumentation
-- **MCP Tools**: Verktyg för att söka och hämta specifik dokumentation
-- **Roslyn Code Analysis**: Statisk kodanalys med diagnostik, metrics och förslag
-- **Intelligent caching**: Lokal cache för snabb åtkomst och minskad nätverksanvändning
+This MCP server exposes:
+- **MCP Resources**: Microsoft's official C# and .NET documentation
+- **MCP Tools**: Tools for searching and fetching specific documentation
+- **Roslyn Code Analysis**: Static code analysis with diagnostics, metrics and suggestions
+- **Intelligent caching**: Local cache for fast access and reduced network usage
 
-## Funktioner
+## Features
 
-### Resources (Alltid tillgängliga)
-- `csharp://coding-conventions` - Officiella C# kodningsstandarder
-- `csharp://design-guidelines` - .NET design-riktlinjer
-- `csharp://language-reference` - C# språkreferens
+### Resources (Always Available)
+- `csharp://coding-conventions` - Official C# coding standards
+- `csharp://design-guidelines` - .NET design guidelines
+- `csharp://language-reference` - C# language reference
 - `csharp://fundamentals` - .NET fundamentals
 
 ### Documentation Tools
-- `fetch_csharp_documentation` - Hämta specifik C# eller .NET-dokumentation
-- `search_best_practices` - Sök efter best practices inom specifika områden:
+- `fetch_csharp_documentation` - Fetch specific C# or .NET documentation
+- `search_best_practices` - Search for best practices in specific areas:
   - security
   - performance
   - exceptions
@@ -29,72 +29,72 @@ Denna MCP-server exponerar:
   - general
 
 ### Roslyn Analysis Tools
-- `analyze_csharp_code` - Analysera C#-kod med Roslyn, ger:
-  - Kompileringsfel och varningar (inklusive StyleCop Analyzers)
-  - Kod-metrics (antal klasser, metoder, rader, cyklomatisk komplexitet)
-  - **Security-analys**: SQL injection, hårdkodade secrets, osäkra filoperationer, svag random-generation
-  - **Performance-analys**: String concatenation i loopar, onödiga materialiseringar, ConfigureAwait-användning
-  - **LINQ-optimering**: Count vs Any, Where-chaining, OrderBy-optimering
-  - Förslag för förbättring (långa metoder, saknad dokumentation, namngivning, etc.)
-- `check_roslyn_status` - Kontrollera om Roslyn analyzer är byggd och redo
-- `build_roslyn_analyzer` - Bygg Roslyn analyzer (krävs innan första användning)
+- `analyze_csharp_code` - Analyze C# code with Roslyn, provides:
+  - Compilation errors and warnings (including StyleCop Analyzers)
+  - Code metrics (number of classes, methods, lines, cyclomatic complexity)
+  - **Security analysis**: SQL injection, hardcoded secrets, unsafe file operations, weak random generation
+  - **Performance analysis**: String concatenation in loops, unnecessary materializations, ConfigureAwait usage
+  - **LINQ optimization**: Count vs Any, Where-chaining, OrderBy optimization
+  - Suggestions for improvement (long methods, missing documentation, naming, etc.)
+- `check_roslyn_status` - Check if Roslyn analyzer is built and ready
+- `build_roslyn_analyzer` - Build Roslyn analyzer (required before first use)
 
 ## Installation
 
-### Snabbstart (Rekommenderat)
+### Quick Start (Recommended)
 
 ```bash
-# Klona eller navigera till projektet
-cd /home/jojo/dev/mcp/review
+# Clone or navigate to the project
+cd /path/to/csharp-review-mcp
 
-# Kör setup-scriptet (installerar allt)
+# Run the setup script (installs everything)
 npm run setup
 ```
 
-Setup-scriptet kommer att:
-1. Installera npm dependencies
-2. Bygga TypeScript-projektet
-3. Kontrollera om .NET SDK finns
-4. Bygga Roslyn analyzer (om .NET SDK är installerat)
+The setup script will:
+1. Install npm dependencies
+2. Build the TypeScript project
+3. Check if .NET SDK is present
+4. Build Roslyn analyzer (if .NET SDK is installed)
 
-### Manuell installation
+### Manual Installation
 
 ```bash
-# Installera npm dependencies
+# Install npm dependencies
 npm install
 
-# Bygg TypeScript-projektet
+# Build TypeScript project
 npm run build
 
-# (Krävs för Roslyn) Installera .NET SDK 8.0+
+# (Required for Roslyn) Install .NET SDK 8.0+
 # https://dotnet.microsoft.com/download
 
-# Bygg Roslyn analyzer
+# Build Roslyn analyzer
 npm run build-roslyn
 
-# (Valfritt) Pre-populate cache med viktig dokumentation
+# (Optional) Pre-populate cache with important documentation
 npm run prepopulate
 ```
 
-### Systemkrav
+### System Requirements
 
-- **Node.js** 18+ (krävs)
-- **npm** (krävs)
-- **.NET SDK 8.0+** (valfritt, för Roslyn-analys)
-  - Om .NET SDK inte är installerat fungerar servern fortfarande, men utan Roslyn-funktionalitet
+- **Node.js** 18+ (required)
+- **npm** (required)
+- **.NET SDK 8.0+** (optional, for Roslyn analysis)
+  - If .NET SDK is not installed, the server will still work but without Roslyn functionality
 
-## Användning
+## Usage
 
-### Som MCP Server
+### As MCP Server
 
-Lägg till i din MCP client-konfiguration (t.ex. Claude Desktop):
+Add to your MCP client configuration (e.g., Claude Desktop):
 
 ```json
 {
   "mcpServers": {
     "csharp-review": {
       "command": "node",
-      "args": ["/home/jojo/dev/mcp/review/build/index.js"]
+      "args": ["/absolute/path/to/csharp-review-mcp/build/index.js"]
     }
   }
 }
@@ -102,89 +102,89 @@ Lägg till i din MCP client-konfiguration (t.ex. Claude Desktop):
 
 ### Pre-populate Cache
 
-För att förbättra prestanda och tillåta offline-användning, kör:
+To improve performance and allow offline usage, run:
 
 ```bash
 npm run prepopulate
 ```
 
-Detta kommer att:
-1. Hämta all viktig dokumentation från Microsoft Learn
-2. Konvertera den till markdown-format
-3. Cacha lokalt i `src/documents/`
-4. Cache är giltig i 7 dagar
+This will:
+1. Fetch all important documentation from Microsoft Learn
+2. Convert it to markdown format
+3. Cache locally in `src/documents/`
+4. Cache is valid for 7 days
 
-## Arkitektur
+## Architecture
 
-### Dokumentationskällor
+### Documentation Sources
 
-Servern hämtar dokumentation från följande officiella källor:
+The server fetches documentation from the following official sources:
 - **C# Coding Conventions**: https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions
 - **C# Language Reference**: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/
 - **.NET Fundamentals**: https://learn.microsoft.com/en-us/dotnet/fundamentals/
 - **.NET Design Guidelines**: https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/
 
-### Caching-strategi
+### Caching Strategy
 
-- Cache placeras i `src/documents/`
-- Cache är giltig i 7 dagar
-- Automatisk uppdatering vid förfrågan om cache är gammal
-- Fallback till placeholder vid nätverksfel
-- Använder Turndown library för professionell HTML-till-Markdown konvertering med bättre kodblock-hantering
+- Cache is placed in `src/documents/`
+- Cache is valid for 7 days
+- Automatic update on request if cache is stale
+- Fallback to placeholder on network errors
+- Uses Turndown library for professional HTML-to-Markdown conversion with better code block handling
 
-### Filstruktur
+### File Structure
 
 ```
-/home/jojo/dev/mcp/review/
+/path/to/csharp-review-mcp/
 ├── src/
 │   ├── index.ts              # MCP server implementation
-│   ├── docFetcher.ts         # Dokumentations-hämtare
+│   ├── docFetcher.ts         # Documentation fetcher
 │   ├── roslynAnalyzer.ts     # Roslyn analyzer wrapper
 │   ├── prepopulateCache.ts   # Cache population script
-│   └── documents/            # Lokal cache för dokumentation
+│   └── documents/            # Local cache for documentation
 ├── roslyn-analyzer/
 │   ├── Program.cs            # C# Roslyn analyzer application
 │   ├── CSharpAnalyzer.csproj # .NET project file
-│   └── bin/                  # Kompilerad .NET binary
-├── build/                     # Kompilerad TypeScript
+│   └── bin/                  # Compiled .NET binary
+├── build/                     # Compiled TypeScript
 ├── setup.sh                   # Setup script
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
 
-## Exempel på användning
+## Usage Examples
 
-### 1. LLM läser coding conventions
-
-```
-LLM: *läser resource csharp://coding-conventions*
-→ Får tillgång till officiella Microsoft C# coding standards
-```
-
-### 2. LLM söker efter best practices
+### 1. LLM reads coding conventions
 
 ```
-LLM: *använder tool search_best_practices med area="async"*
-→ Får rekommendationer om async/await best practices
+LLM: *reads resource csharp://coding-conventions*
+→ Gets access to official Microsoft C# coding standards
 ```
 
-### 3. LLM hämtar specifik dokumentation
+### 2. LLM searches for best practices
 
 ```
-LLM: *använder tool fetch_csharp_documentation*
+LLM: *uses tool search_best_practices with area="async"*
+→ Gets recommendations about async/await best practices
+```
+
+### 3. LLM fetches specific documentation
+
+```
+LLM: *uses tool fetch_csharp_documentation*
 → topic: "LINQ"
 → category: "language-reference"
-→ Får detaljerad LINQ-dokumentation
+→ Gets detailed LINQ documentation
 ```
 
-### 4. LLM analyserar C#-kod med Roslyn
+### 4. LLM analyzes C# code with Roslyn
 
 ```
-LLM: *använder tool analyze_csharp_code*
+LLM: *uses tool analyze_csharp_code*
 → code: "public class MyClass { public void MyMethod() { ... } }"
-→ Får tillbaka:
-  - Diagnostik: kompileringsfel, varningar, StyleCop violations
+→ Returns:
+  - Diagnostics: compilation errors, warnings, StyleCop violations
   - Metrics: 1 class, 1 method, 15 lines, complexity: 3
   - Suggestions:
     * "Method 'MyMethod' is missing XML documentation"
@@ -193,25 +193,25 @@ LLM: *använder tool analyze_csharp_code*
     * "LINQ: Use Any() instead of Count() > 0 for better performance"
 ```
 
-### 5. Komplett code review workflow
+### 5. Complete code review workflow
 
 ```
-1. LLM läser csharp://coding-conventions för standards
-2. LLM analyserar koden med analyze_csharp_code
-3. LLM jämför resultaten med coding conventions
-4. LLM söker best practices för specifika områden
-5. LLM ger detaljerad feedback baserat på:
-   - Roslyn diagnostik och StyleCop Analyzers
-   - Security-analys (SQL injection, secrets, osäkra operationer)
-   - Performance-analys (string handling, LINQ, async patterns)
-   - LINQ-optimeringar
-   - Microsoft's officiella riktlinjer
+1. LLM reads csharp://coding-conventions for standards
+2. LLM analyzes code with analyze_csharp_code
+3. LLM compares results with coding conventions
+4. LLM searches best practices for specific areas
+5. LLM provides detailed feedback based on:
+   - Roslyn diagnostics and StyleCop Analyzers
+   - Security analysis (SQL injection, secrets, unsafe operations)
+   - Performance analysis (string handling, LINQ, async patterns)
+   - LINQ optimizations
+   - Microsoft's official guidelines
    - Best practices
 ```
 
-## Utveckling
+## Development
 
-### Bygga projektet
+### Build the project
 
 ```bash
 npm run build
@@ -223,7 +223,7 @@ npm run build
 npm run watch
 ```
 
-### Starta servern direkt
+### Start the server directly
 
 ```bash
 npm start
@@ -231,74 +231,74 @@ npm start
 
 ## Roslyn Analyzer Features
 
-Den integrerade Roslyn analyzer ger omfattande kodanalys med flera specialiserade kategorier:
+The integrated Roslyn analyzer provides comprehensive code analysis with several specialized categories:
 
-### Diagnostik
-- Kompileringsfel och varningar
-- **StyleCop Analyzers**: Automatisk stilkontroll enligt C# best practices
+### Diagnostics
+- Compilation errors and warnings
+- **StyleCop Analyzers**: Automatic style checking according to C# best practices
 - Best practice violations
-- Kod-smell detection
+- Code smell detection
 
 ### Metrics
-- Antal klasser
-- Antal metoder
-- Antal rader kod
-- Cyklomatisk komplexitet
+- Number of classes
+- Number of methods
+- Number of lines of code
+- Cyclomatic complexity
 
-### Grundläggande Förslag
-- Långa metoder (>50 rader)
-- Saknad XML-dokumentation på publika metoder
-- Async-metoder utan "Async"-suffix
-- Stora klasser (>20 medlemmar)
-- Hög cyklomatisk komplexitet (>10)
+### Basic Suggestions
+- Long methods (>50 lines)
+- Missing XML documentation on public methods
+- Async methods without "Async" suffix
+- Large classes (>20 members)
+- High cyclomatic complexity (>10)
 
-### Security-Analys 🔒
-- **SQL Injection**: Upptäcker string concatenation i SQL queries
-- **Hårdkodade secrets**: Hittar passwords, API keys, connection strings i kod
-- **Exception handling**: Varnar för catch-all handlers utan logging
-- **Filoperationer**: Upptäcker osäkra File/Directory-operationer
-- **Kryptografi**: Varnar vid användning av System.Random för säkerhetskänsliga operationer
+### Security Analysis 🔒
+- **SQL Injection**: Detects string concatenation in SQL queries
+- **Hardcoded secrets**: Finds passwords, API keys, connection strings in code
+- **Exception handling**: Warns about catch-all handlers without logging
+- **File operations**: Detects unsafe File/Directory operations
+- **Cryptography**: Warns when using System.Random for security-sensitive operations
 
-### Performance-Analys ⚡
-- **String concatenation**: Upptäcker string concat i loopar (föreslår StringBuilder)
-- **LINQ materialisering**: Hittar onödiga ToList() före Count/Any
-- **Deferred execution**: Varnar för multipel enumeration av IEnumerable
-- **String formatting**: Rekommenderar interpolation över string.Format
-- **Async/await**: Föreslår ConfigureAwait(false) i library code
-- **LINQ chaining**: Upptäcker excessiv method chaining
+### Performance Analysis ⚡
+- **String concatenation**: Detects string concat in loops (suggests StringBuilder)
+- **LINQ materialization**: Finds unnecessary ToList() before Count/Any
+- **Deferred execution**: Warns about multiple enumeration of IEnumerable
+- **String formatting**: Recommends interpolation over string.Format
+- **Async/await**: Suggests ConfigureAwait(false) in library code
+- **LINQ chaining**: Detects excessive method chaining
 
-### LINQ-Optimering 🚀
-- **Count() > 0** → Använd Any()
-- **Where().Count()** → Använd Count(predicate)
-- **Where().Any()** → Använd Any(predicate)
-- **Where().First()** → Använd First(predicate)
+### LINQ Optimization 🚀
+- **Count() > 0** → Use Any()
+- **Where().Count()** → Use Count(predicate)
+- **Where().Any()** → Use Any(predicate)
+- **Where().First()** → Use First(predicate)
 - **Select(x => x)** → Redundant operation
-- **OrderBy().First()** → Använd MinBy/MaxBy
-- **ToList().Where()** → Applicera Where() före ToList()
+- **OrderBy().First()** → Use MinBy/MaxBy
+- **ToList().Where()** → Apply Where() before ToList()
 
-## Senaste uppdateringar
+## Latest Updates
 
-### Version 2.0 - Förbättrad Kodanalys ✨
+### Version 2.0 - Enhanced Code Analysis ✨
 
 **StyleCop Integration** ✅
-- Integrerad StyleCop Analyzers för automatisk stilkontroll
-- Enforcerar konsekvent C# kod-stil enligt branschstandard
-- Ger detaljerade stilrekommendationer under kod review
+- Integrated StyleCop Analyzers for automatic style checking
+- Enforces consistent C# code style according to industry standards
+- Provides detailed style recommendations during code review
 
-**Utökad Roslyn Analyzer** ✅
-- **Security Analyzer**: Upptäcker SQL injection, hårdkodade secrets, osäkra filoperationer, svag kryptografi
-- **Performance Analyzer**: Identifierar string concatenation i loopar, onödiga LINQ-materialiseringar, async-patterns
-- **LINQ Optimizer**: Föreslår optimeringar för vanliga LINQ anti-patterns
+**Enhanced Roslyn Analyzer** ✅
+- **Security Analyzer**: Detects SQL injection, hardcoded secrets, unsafe file operations, weak cryptography
+- **Performance Analyzer**: Identifies string concatenation in loops, unnecessary LINQ materializations, async patterns
+- **LINQ Optimizer**: Suggests optimizations for common LINQ anti-patterns
 
-**Förbättrad HTML-parsing** ✅
-- Implementerad Turndown library för professionell HTML-till-Markdown konvertering
-- Bättre bevarande av kodblock med språkidentifiering
-- Förbättrad strukturbevarande vid parsing av Microsoft Learn-dokumentation
+**Improved HTML Parsing** ✅
+- Implemented Turndown library for professional HTML-to-Markdown conversion
+- Better preservation of code blocks with language identification
+- Improved structure preservation when parsing Microsoft Learn documentation
 
-## Bidra
+## Contributing
 
-Detta är ett pågående projekt. Förbättringsförslag och bidrag är välkomna!
+This is an ongoing project. Suggestions for improvement and contributions are welcome!
 
-## Licens
+## License
 
 ISC

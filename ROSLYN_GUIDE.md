@@ -1,12 +1,12 @@
 # Roslyn Integration Guide
 
-## Översikt
+## Overview
 
-Roslyn-integrationen ger din MCP-server kraftfull statisk kodanalys för C#. LLM:er kan nu analysera kod och få detaljerad feedback direkt från Microsoft's Roslyn compiler, StyleCop Analyzers, samt specialiserade security-, performance- och LINQ-optimeringsanalyzers.
+The Roslyn integration provides your MCP server with powerful static code analysis for C#. LLMs can now analyze code and receive detailed feedback directly from Microsoft's Roslyn compiler, StyleCop Analyzers, and specialized security, performance, and LINQ optimization analyzers.
 
 ## Installation
 
-### 1. Installera .NET SDK
+### 1. Install .NET SDK
 
 ```bash
 # Ubuntu/Debian
@@ -15,37 +15,37 @@ chmod +x ./dotnet-install.sh
 ./dotnet-install.sh --channel 8.0
 
 # Windows
-# Ladda ner från https://dotnet.microsoft.com/download
+# Download from https://dotnet.microsoft.com/download
 ```
 
-### 2. Bygg Roslyn Analyzer
+### 2. Build Roslyn Analyzer
 
 ```bash
-# Automatiskt via setup
+# Automatically via setup
 npm run setup
 
-# Eller manuellt
+# Or manually
 npm run build-roslyn
 ```
 
-### 3. Verifiera installation
+### 3. Verify Installation
 
 ```bash
-# Kontrollera via MCP tool
-# Från LLM: använd tool "check_roslyn_status"
+# Check via MCP tool
+# From LLM: use tool "check_roslyn_status"
 ```
 
-## Användning
+## Usage
 
-### Från LLM i MCP-session
+### From LLM in MCP Session
 
-#### 1. Kontrollera status
+#### 1. Check Status
 ```
 Tool: check_roslyn_status
-→ Verifierar att Roslyn är redo
+→ Verifies that Roslyn is ready
 ```
 
-#### 2. Analysera kod
+#### 2. Analyze Code
 ```
 Tool: analyze_csharp_code
 Parameters:
@@ -53,12 +53,12 @@ Parameters:
   fileName: "Test.cs" (optional)
 
 Returns:
-  - Diagnostics (fel och varningar)
-  - Metrics (klasser, metoder, komplexitet)
-  - Suggestions (förbättringsförslag)
+  - Diagnostics (errors and warnings)
+  - Metrics (classes, methods, complexity)
+  - Suggestions (improvement suggestions)
 ```
 
-### Exempel 1: Grundläggande kod
+### Example 1: Basic Code
 
 ```csharp
 public class Calculator
@@ -75,14 +75,14 @@ public class Calculator
 }
 ```
 
-Roslyn kommer att upptäcka:
-- ✓ Kod kompilerar korrekt
-- ⚠️ Saknad XML-dokumentation på publika metoder (grundläggande check)
-- ⚠️ Async-metod "Calculate" saknar "Async"-suffix (grundläggande check)
-- ⚠️ StyleCop violations (stilregler: access modifiers, file header, etc.)
-- ℹ️ Metrics: 1 klass, 2 metoder, ~10 rader, komplexitet: 2
+Roslyn will detect:
+- ✓ Code compiles correctly
+- ⚠️ Missing XML documentation on public methods (basic check)
+- ⚠️ Async method "Calculate" missing "Async" suffix (basic check)
+- ⚠️ StyleCop violations (style rules: access modifiers, file header, etc.)
+- ℹ️ Metrics: 1 class, 2 methods, ~10 lines, complexity: 2
 
-### Exempel 2: Security-problem
+### Example 2: Security Issues
 
 ```csharp
 public class UserService
@@ -97,11 +97,11 @@ public class UserService
 }
 ```
 
-Roslyn kommer att upptäcka:
+Roslyn will detect:
 - 🔒 **SECURITY**: Hardcoded sensitive data in variable 'password'. Use secure configuration.
 - 🔒 **SECURITY**: Potential SQL injection risk detected. Use parameterized queries instead of string concatenation.
 
-### Exempel 3: Performance-problem
+### Example 3: Performance Issues
 
 ```csharp
 public class DataProcessor
@@ -118,10 +118,10 @@ public class DataProcessor
 }
 ```
 
-Roslyn kommer att upptäcka:
+Roslyn will detect:
 - ⚡ **PERFORMANCE**: String concatenation inside loop detected. Use StringBuilder for better performance.
 
-### Exempel 4: LINQ-problem
+### Example 4: LINQ Issues
 
 ```csharp
 public class QueryService
@@ -133,47 +133,47 @@ public class QueryService
 }
 ```
 
-Roslyn kommer att upptäcka:
+Roslyn will detect:
 - 🚀 **LINQ**: Use Any(predicate) instead of Where(predicate).Count() for better performance.
 - 🚀 **LINQ**: Use Any() instead of Count() > 0 for better performance.
 
-## Vad Roslyn Analyzer kontrollerar
+## What Roslyn Analyzer Checks
 
-### 1. Kompileringsfel & Varningar
-- Syntax-fel
-- Typ-fel
-- Saknade referenser
-- Namespace-problem
+### 1. Compilation Errors & Warnings
+- Syntax errors
+- Type errors
+- Missing references
+- Namespace issues
 - Unused variables
 - Unreachable code
 - Nullability warnings
 - Deprecated API usage
 
-### 2. StyleCop Analyzers (Kod-stil)
+### 2. StyleCop Analyzers (Code Style)
 - File header requirements
 - Using directive ordering
 - Element access modifiers
 - Brace placement
 - Naming conventions
 - Documentation requirements
-- 30+ stilregler
+- 30+ style rules
 
-### 3. Security-Analys 🔒
-- **SQL Injection**: String concatenation i SQL queries
-- **Hårdkodade secrets**: Passwords, API keys, connection strings
-- **Exception handling**: Catch-all handlers utan logging
-- **Osäkra filoperationer**: File.Delete, File.Move utan validering
-- **Svag kryptografi**: System.Random för säkerhetskänsliga operationer
+### 3. Security Analysis 🔒
+- **SQL Injection**: String concatenation in SQL queries
+- **Hardcoded secrets**: Passwords, API keys, connection strings
+- **Exception handling**: Catch-all handlers without logging
+- **Unsafe file operations**: File.Delete, File.Move without validation
+- **Weak cryptography**: System.Random for security-sensitive operations
 
-### 4. Performance-Analys ⚡
-- **String concatenation**: I loopar (föreslår StringBuilder)
-- **LINQ materialisering**: Onödiga ToList() före Count/Any
-- **Deferred execution**: Multipel enumeration av IEnumerable
+### 4. Performance Analysis ⚡
+- **String concatenation**: In loops (suggests StringBuilder)
+- **LINQ materialization**: Unnecessary ToList() before Count/Any
+- **Deferred execution**: Multiple enumeration of IEnumerable
 - **String formatting**: string.Format vs interpolation
-- **Async/await**: Saknad ConfigureAwait(false)
-- **LINQ chaining**: Excessiv method chaining
+- **Async/await**: Missing ConfigureAwait(false)
+- **LINQ chaining**: Excessive method chaining
 
-### 5. LINQ-Optimering 🚀
+### 5. LINQ Optimization 🚀
 - Count() > 0 → Any()
 - Where().Count() → Count(predicate)
 - Where().Any() → Any(predicate)
@@ -182,23 +182,23 @@ Roslyn kommer att upptäcka:
 - OrderBy().First() → MinBy/MaxBy
 - ToList().Where() → Where().ToList()
 
-### 6. Best Practices (Grundläggande)
-- Metod-längd (>50 rader)
-- Klass-storlek (>20 medlemmar)
-- Cyklomatisk komplexitet (>10)
-- Async-naming (saknar "Async"-suffix)
+### 6. Best Practices (Basic)
+- Method length (>50 lines)
+- Class size (>20 members)
+- Cyclomatic complexity (>10)
+- Async naming (missing "Async" suffix)
 
-### 7. Dokumentation
-- Saknad XML-dokumentation på publika metoder
-- Saknad dokumentation på publika klasser
+### 7. Documentation
+- Missing XML documentation on public methods
+- Missing documentation on public classes
 
-### 8. Kod-metrics
-- Antal klasser
-- Antal metoder
-- Antal rader
-- Cyklomatisk komplexitet
+### 8. Code Metrics
+- Number of classes
+- Number of methods
+- Number of lines
+- Cyclomatic complexity
 
-## Output-format
+## Output Format
 
 ```json
 {
@@ -231,10 +231,10 @@ Roslyn kommer att upptäcka:
 }
 ```
 
-## Integrerade Analyzers
+## Integrated Analyzers
 
-### StyleCop Analyzers ✅ Implementerad
-Redan integrerad i projektet! StyleCop.Analyzers version 1.2.0-beta.556 körs automatiskt vid varje analys.
+### StyleCop Analyzers ✅ Implemented
+Already integrated in the project! StyleCop.Analyzers version 1.2.0-beta.556 runs automatically with each analysis.
 
 ```xml
 <!-- roslyn-analyzer/CSharpAnalyzer.csproj -->
@@ -244,35 +244,35 @@ Redan integrerad i projektet! StyleCop.Analyzers version 1.2.0-beta.556 körs au
 </PackageReference>
 ```
 
-### Custom Security Analyzer ✅ Implementerad
+### Custom Security Analyzer ✅ Implemented
 - SQL injection detection
 - Hardcoded secrets detection
 - Unsafe file operations
 - Weak cryptography detection
 
-Se `roslyn-analyzer/Program.cs` metod `GenerateSecuritySuggestions()` för implementation.
+See `roslyn-analyzer/Program.cs` method `GenerateSecuritySuggestions()` for implementation.
 
-### Custom Performance Analyzer ✅ Implementerad
-- String concatenation i loopar
-- Onödiga LINQ-materialiseringar
+### Custom Performance Analyzer ✅ Implemented
+- String concatenation in loops
+- Unnecessary LINQ materializations
 - Async/await patterns
 - String formatting optimization
 
-Se `roslyn-analyzer/Program.cs` metod `GeneratePerformanceSuggestions()` för implementation.
+See `roslyn-analyzer/Program.cs` method `GeneratePerformanceSuggestions()` for implementation.
 
-### Custom LINQ Optimizer ✅ Implementerad
+### Custom LINQ Optimizer ✅ Implemented
 - Count() vs Any() optimization
 - Where-chaining optimization
 - OrderBy optimization
 
-Se `roslyn-analyzer/Program.cs` metod `GenerateLinqSuggestions()` för implementation.
+See `roslyn-analyzer/Program.cs` method `GenerateLinqSuggestions()` for implementation.
 
-### Lägg till egna custom rules
+### Adding Your Own Custom Rules
 
-Redigera `roslyn-analyzer/Program.cs` för att lägga till fler custom checks:
+Edit `roslyn-analyzer/Program.cs` to add more custom checks:
 
 ```csharp
-// Exempel: Kontrollera för Magic Numbers
+// Example: Check for Magic Numbers
 static List<string> GenerateMagicNumberSuggestions(SyntaxNode root)
 {
     var suggestions = new List<string>();
@@ -293,39 +293,39 @@ static List<string> GenerateMagicNumberSuggestions(SyntaxNode root)
     return suggestions;
 }
 
-// Lägg till i AnalyzeCode():
+// Add to AnalyzeCode():
 result.Suggestions.AddRange(GenerateMagicNumberSuggestions(root));
 ```
 
-## Felsökning
+## Troubleshooting
 
-### Roslyn analyzer byggs inte
+### Roslyn Analyzer Won't Build
 
 ```bash
-# Kontrollera .NET version
+# Check .NET version
 dotnet --version
-# Bör vara 8.0 eller högre
+# Should be 8.0 or higher
 
-# Bygg manuellt för att se fel
+# Build manually to see errors
 cd roslyn-analyzer
 dotnet build --verbosity detailed
 ```
 
-### "Roslyn analyzer not built" error
+### "Roslyn analyzer not built" Error
 
 ```bash
-# Kör build igen
+# Run build again
 npm run build-roslyn
 
-# Eller via MCP tool
+# Or via MCP tool
 # Tool: build_roslyn_analyzer
 ```
 
-### Timeout vid analys
+### Timeout During Analysis
 
-För stora kod-filer kan analysen ta tid. Överväg att:
-1. Dela upp kod i mindre delar
-2. Öka timeout i `roslynAnalyzer.ts`
+For large code files, analysis can take time. Consider:
+1. Breaking up code into smaller parts
+2. Increasing timeout in `roslynAnalyzer.ts`
 
 ## Performance
 
@@ -333,18 +333,18 @@ För stora kod-filer kan analysen ta tid. Överväg att:
 - **Medium files** (100-500 lines): 100-500ms
 - **Large files** (>500 lines): 500ms-2s
 
-För bästa prestanda, analysera kod i rimliga bitar.
+For best performance, analyze code in reasonable chunks.
 
-## Säkerhet
+## Security
 
-Roslyn analyzer kör C#-kod i ett isolerat .NET-process. Den har INTE access till:
-- Filsystemet (utöver temp-filen)
-- Nätverket
-- Andra processer
+Roslyn analyzer runs C# code in an isolated .NET process. It does NOT have access to:
+- The file system (except the temp file)
+- The network
+- Other processes
 
-Koden kompileras men körs ALDRIG.
+The code is compiled but NEVER executed.
 
-## Licens
+## License
 
-Roslyn är open source under MIT-licens.
+Roslyn is open source under the MIT license.
 - https://github.com/dotnet/roslyn
